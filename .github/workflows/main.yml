@@ -2,7 +2,7 @@ name: Full DevOps Flow
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature-test-pipeline ]
 
 jobs:
   build-and-push:
