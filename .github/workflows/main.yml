@@ -1,19 +1,39 @@
-name: Test Project
+name: DevOps Pipeline CI/CD
 
 on:
-  pull_request:
-    branches:
-      - main
+  push:
+    branches: [ main ]
 
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-latest
-    container:
-      image: node:20
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      # 1. CI: Build and Test
+      - name: Build and Test
+        run: |
+          npm ci
+          npm test
+
+      # 2. Build Docker Image
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
-          node-version: 20
-      - run: npm ci
-      - run: npm test
-      - run: npm run build
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/demo-app:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/demo-app:latest
+
+      # 3. CD: Deploy to Kubernetes
+      - name: Set K8s Context
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Deploy to Cluster
+        run: kubectl apply -f k8s-deployment.yaml
