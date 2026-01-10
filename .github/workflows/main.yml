@@ -31,19 +31,19 @@ jobs:
           # Replace 'geetesh' with your actual Docker Hub username
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/github-actions-demo:latest
 
-  deploy-local:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set Kubernetes Context
-        uses: azure/k8s-set-context@v3
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
-
-      - name: Deploy to K8s
-        # This will fail until your K8s cluster is reachable from the internet
-        # But it's the correct way to write the script!
-        run: kubectl apply -f k8s-deployment.yaml
+#  deploy-local:
+#    needs: build-and-push
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: Set Kubernetes Context
+#        uses: azure/k8s-set-context@v3
+#        with:
+#          method: kubeconfig
+#          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+#
+#      - name: Deploy to K8s
+#        # This will fail until your K8s cluster is reachable from the internet
+#        # But it's the correct way to write the script!
+#        run: kubectl apply -f k8s-deployment.yaml
